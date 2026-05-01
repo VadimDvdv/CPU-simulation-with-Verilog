@@ -22,7 +22,7 @@ module adder_subtractor (
 
 endmodule
 
-module ALU_8bit (
+module alu (
     input [7:0] A,
     input [7:0] B,
     input [2:0] opcode,

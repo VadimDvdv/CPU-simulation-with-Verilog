@@ -8,7 +8,7 @@ module alu_tb;
     wire [3:0] flags;
 
     // instantiate alu
-    ALU_8bit uut (
+    alu uut (
         .A(A),
         .B(B),
         .opcode(opcode),
