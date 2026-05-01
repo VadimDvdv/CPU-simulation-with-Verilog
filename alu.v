@@ -44,7 +44,6 @@ module ALU_8bit (
 
     always @(*) begin
 
-        
         case (opcode)
             3'b000, 3'b001: result = arithmetic_result;   // same implementation - list with a comma
             3'b010: result = A & B;
@@ -65,5 +64,34 @@ module ALU_8bit (
         flags[2] = result[7];   // sign flag
         flags[3] = ~(opcode[1] | opcode[2]) & V;
     end
+
+endmodule
+
+
+// Testbench
+
+module alu_tb;
+
+    // Define I/O
+    reg [7:0] A, B;    // TODO: understand why I - reg, O - wire
+    reg [2:0] opcode;
+    wire [7:0] result;
+    wire [3:0] flags;
+
+    // instantiate alu
+    ALU_8bit uut (
+        .A(A),
+        .B(B),
+        .opcode(opcode),
+        .result(result),
+        .flags(flags)
+    );
+
+    initial begin
+        $dumpfile("alu_test.vcd");
+        $dumpvars(0, alu_tb); // ?
+
+    end
+
 
 endmodule
