@@ -26,12 +26,44 @@ module ALU_8bit (
     input [7:0] A,
     input [7:0] B,
     input [2:0] opcode,
-    output [7:0] result,
-    output [3:0] flags
+    output reg [7:0] result,
+    output reg [3:0] flags
 );
 
-    always @(*) begin:
+    // instantiate the adder-subtractor, OUTSIDE THE PROCEDURAL BLOCK
+    wire [7:0] arithmetic_result;
+    wire c_out, V;
+    adder_subtractor u_add_sub (
+        .A (A),
+        .B (B),
+        .ctrl (opcode[0]),
+        .result (arithmetic_result),
+        .c_out (c_out),
+        .V (V)
+    );
 
+    always @(*) begin
+
+        
+        case (opcode)
+            3'b000, 3'b001: result = arithmetic_result;   // same implementation - list with a comma
+            3'b010: result = A & B;
+            3'b011: result = A | B;
+            3'b100: result = A ^ B;
+            3'b101: result = ~A;
+            3'b110: result = A << 1;
+            3'b111: result = A >> 1;
+            default: begin
+                result = 8'b0;
+                flags = 4'b0;
+            end
+        endcase
+
+        // flags calculation
+        flags[0] = ~|result   // zero flag, NOR all bits
+        flags[1] = ~(opcode[1] | opcode[2]) & c_out;   // c_out flag
+        flags[2] = result[7];   // sign flag
+        flags[3] = ~(opcode[1] | opcode[2]) & V;
     end
 
 endmodule
