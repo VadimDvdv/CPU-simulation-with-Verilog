@@ -8,13 +8,13 @@ module adder_subtractor (
 );
     // Two's complement: invert B and inject carry-in when subtracting
     wire [7:0] B_eff = ctrl ? ~B : B;
-    wire       cin = ctrl;
+    wire       cin   = ctrl;
 
     // Full 8-bit addition — temp[8] is c_out
-    wire [8:0] temp = {1'b0, A} + {1'b0, B_eff} + cin;
+    wire [8:0] temp = {1'b0, A}       + {1'b0, B_eff} + cin;
 
     // Lower 7 bits only — temp1[7] is C_{n-1} (carry into MSB)
-    wire [7:0] temp1 = {1'b0, A[6:0]} + {1'b0, B_eff[6:0]} + cin;
+    wire [7:0] temp1 = {1'b0, A[6:0]}  + {1'b0, B_eff[6:0]} + cin;
 
     assign result = temp[7:0];
     assign c_out  = temp[8];
@@ -34,17 +34,18 @@ module ALU_8bit (
     wire [7:0] arithmetic_result;
     wire c_out, V;
     adder_subtractor u_add_sub (
-        .A(A),
-        .B(B),
-        .ctrl(opcode[0]),
-        .result(arithmetic_result),
-        .c_out(c_out),
-        .V(V)
+        .A (A),
+        .B (B),
+        .ctrl (opcode[0]),
+        .result (arithmetic_result),
+        .c_out (c_out),
+        .V (V)
     );
+
     always @(*) begin
 
         case (opcode)
-            3'b000, 3'b001: result = arithmetic_result;  // same implementation - list with a comma
+            3'b000, 3'b001: result = arithmetic_result;   // same implementation - list with a comma
             3'b010: result = A & B;
             3'b011: result = A | B;
             3'b100: result = A ^ B;
@@ -53,14 +54,14 @@ module ALU_8bit (
             3'b111: result = A >> 1;
             default: begin
                 result = 8'b0;
-                flags  = 4'b0;
+                flags = 4'b0;
             end
         endcase
 
         // flags calculation
-        flags[0] = ~|result;  // zero flag, NOR all bits
-        flags[1] = ~(opcode[1] | opcode[2]) & c_out;  // c_out flag
-        flags[2] = result[7];  // sign flag
+        flags[0] = ~|result   // zero flag, NOR all bits
+        flags[1] = ~(opcode[1] | opcode[2]) & c_out;   // c_out flag
+        flags[2] = result[7];   // sign flag
         flags[3] = ~(opcode[1] | opcode[2]) & V;
     end
 
@@ -72,8 +73,8 @@ endmodule
 module alu_tb;
 
     // Define I/O
-    reg [7:0] A, B;  // TODO: understand why I - reg, O - wire
-    reg  [2:0] opcode;
+    reg [7:0] A, B;    // TODO: understand why I - reg, O - wire
+    reg [2:0] opcode;
     wire [7:0] result;
     wire [3:0] flags;
 
@@ -88,9 +89,10 @@ module alu_tb;
 
     initial begin
         $dumpfile("alu_test.vcd");
-        $dumpvars(0, alu_tb);  // ?
+        $dumpvars(0, alu_tb); // ?
 
     end
 
 
 endmodule
+
