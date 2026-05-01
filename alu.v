@@ -74,6 +74,7 @@ module alu_tb;
 
     // Define I/O
     reg [7:0] A, B;    // TODO: understand why I - reg, O - wire
+    
     reg [2:0] opcode;
     wire [7:0] result;
     wire [3:0] flags;
