@@ -23,9 +23,9 @@ module adder_subtractor (
 endmodule
 
 module alu (
-    input [7:0] A,
-    input [7:0] B,
-    input [2:0] opcode,
+    input      [7:0] A,
+    input      [7:0] B,
+    input      [2:0] opcode,
     output reg [7:0] result,
     output reg [3:0] flags
 );
@@ -66,3 +66,23 @@ module alu (
     end
 
 endmodule
+
+/*
+    "[verilog]": {
+    "editor.defaultFormatter": "mshr-h.VerilogHDL",
+    "editor.formatOnSave": true
+    },
+
+    "[systemverilog]": {
+    "editor.defaultFormatter": "mshr-h.VerilogHDL",
+    "editor.formatOnSave": true
+    },
+
+    "verilog.formatting.verilogHDL.formatter": "verible-verilog-format",
+    "verilog.formatting.systemVerilog.formatter": "verible-verilog-format",
+    "verilog.formatting.veribleVerilogFormatter.path": "verible-verilog-format",
+    "verilog.formatting.veribleVerilogFormatter.arguments": "--indentation_spaces=4 --module_net_variable_alignment=align --assignment_statement_alignment=align --port_declarations_alignment=align",
+    "verilog.linting.linter": "verible-verilog-lint",
+    "verilog.linting.veribleVerilogLint.path": "verible-verilog-lint",
+    "verilog.linting.veribleVerilogLint.arguments": ""
+*/
