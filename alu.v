@@ -10,10 +10,10 @@ module adder_subtractor (
     wire [7:0] B_eff = ctrl ? ~B : B;
     wire       cin = ctrl;
 
-    // Full 8-bit addition — temp[8] is c_out
+    // Full 8-bit addition, temp[8] is c_out
     wire [8:0] temp = {1'b0, A} + {1'b0, B_eff} + cin;
 
-    // Lower 7 bits only — temp1[7] is C_{n-1} (carry into MSB)
+    // Lower 7 bits only - temp1[7] is C_7 (carry into MSB)
     wire [7:0] temp1 = {1'b0, A[6:0]} + {1'b0, B_eff[6:0]} + cin;
 
     assign result = temp[7:0];
@@ -34,12 +34,12 @@ module alu (
     wire [7:0] arithmetic_result;
     wire c_out, V;
     adder_subtractor u_add_sub (
-        .A(A),
-        .B(B),
-        .ctrl(opcode[0]),
-        .result(arithmetic_result),
-        .c_out(c_out),
-        .V(V)
+            .A     (A),
+            .B     (B),
+            .ctrl  (opcode[0]),
+            .result(arithmetic_result),
+            .c_out (c_out),
+            .V     (V)
     );
 
     always @(*) begin
@@ -66,23 +66,3 @@ module alu (
     end
 
 endmodule
-
-/*
-    "[verilog]": {
-    "editor.defaultFormatter": "mshr-h.VerilogHDL",
-    "editor.formatOnSave": true
-    },
-
-    "[systemverilog]": {
-    "editor.defaultFormatter": "mshr-h.VerilogHDL",
-    "editor.formatOnSave": true
-    },
-
-    "verilog.formatting.verilogHDL.formatter": "verible-verilog-format",
-    "verilog.formatting.systemVerilog.formatter": "verible-verilog-format",
-    "verilog.formatting.veribleVerilogFormatter.path": "verible-verilog-format",
-    "verilog.formatting.veribleVerilogFormatter.arguments": "--indentation_spaces=4 --module_net_variable_alignment=align --assignment_statement_alignment=align --port_declarations_alignment=align",
-    "verilog.linting.linter": "verible-verilog-lint",
-    "verilog.linting.veribleVerilogLint.path": "verible-verilog-lint",
-    "verilog.linting.veribleVerilogLint.arguments": ""
-*/

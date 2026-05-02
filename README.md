@@ -17,7 +17,7 @@ The CPU is built from three core modules:
 
 ## Status
 
-🔧 In progress - ALU module design complete. ALU code implementation, register file, and control unit under development.
+🔧 In progress - ALU design and testbench are complete. Register file, and control unit under development.
 
 ## Running
 
