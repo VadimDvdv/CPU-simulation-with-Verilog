@@ -66,3 +66,8 @@ module alu (
     end
 
 endmodule
+
+/*
+ "verilog.formatting.veribleVerilogFormatter.arguments": "--indentation_spaces=4 --module_net_variable_alignment=align --assignment_statement_alignment=align --port_declarations_alignment=align --named_port_alignment=align --formal_parameters_alignment=align --wrap_spaces=8 --port_declarations_indentation=indent",
+
+*/
