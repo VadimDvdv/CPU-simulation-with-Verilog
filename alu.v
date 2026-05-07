@@ -34,24 +34,24 @@ module alu (
     wire [7:0] arithmetic_result;
     wire c_out, V;
     adder_subtractor u_add_sub (
-            .A     (A),
-            .B     (B),
-            .ctrl  (opcode[0]),
-            .result(arithmetic_result),
-            .c_out (c_out),
-            .V     (V)
+        .A     (A),
+        .B     (B),
+        .ctrl  (opcode[0]),
+        .result(arithmetic_result),
+        .c_out (c_out),
+        .V     (V)
     );
 
     always @(*) begin
 
         case (opcode)
             3'b000, 3'b001: result = arithmetic_result;  // same implementation - list with a comma
-            3'b010: result = A & B;
-            3'b011: result = A | B;
-            3'b100: result = A ^ B;
-            3'b101: result = ~A;
-            3'b110: result = A << 1;
-            3'b111: result = A >> 1;
+            3'b010:         result = A & B;
+            3'b011:         result = A | B;
+            3'b100:         result = A ^ B;
+            3'b101:         result = ~A;
+            3'b110:         result = A << 1;
+            3'b111:         result = A >> 1;
             default: begin
                 result = 8'b0;
                 flags  = 4'b0;
@@ -67,7 +67,4 @@ module alu (
 
 endmodule
 
-/*
- "verilog.formatting.veribleVerilogFormatter.arguments": "--indentation_spaces=4 --module_net_variable_alignment=align --assignment_statement_alignment=align --port_declarations_alignment=align --named_port_alignment=align --formal_parameters_alignment=align --wrap_spaces=8 --port_declarations_indentation=indent",
-
-*/
+// --indentation_spaces=4 --wrap_spaces=4 --column_limit=100 --port_declarations_alignment=align --port_declarations_indentation=indent --named_port_alignment=align --named_parameter_alignment=align --formal_parameters_alignment=align --formal_parameters_indentation=indent --module_net_variable_alignment=preserve --assignment_statement_alignment=preserve --case_items_alignment=align --class_member_variable_alignment=align --distribution_items_alignment=align --enum_assignment_statement_alignment=align --struct_union_members_alignment=align --try_wrap_long_lines=true

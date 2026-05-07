@@ -8,11 +8,11 @@ module alu_tb;
 
     // instantiate alu
     alu uut (
-            .A     (A),
-            .B     (B),
-            .opcode(opcode),
-            .result(result),
-            .flags (flags)
+        .A     (A),
+        .B     (B),
+        .opcode(opcode),
+        .result(result),
+        .flags (flags)
     );
 
     initial begin
