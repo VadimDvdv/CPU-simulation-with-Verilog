@@ -1,3 +1,5 @@
+`timescale 1ns / 1ps
+
 module adder_subtractor (
     input  [7:0] A,
     input  [7:0] B,

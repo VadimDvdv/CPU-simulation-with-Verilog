@@ -1,3 +1,5 @@
+`timescale 1ns / 1ps
+
 module alu_tb;
 
     // Define I/O
