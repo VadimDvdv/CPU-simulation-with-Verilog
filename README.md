@@ -17,7 +17,8 @@ The CPU is built from three core modules:
 
 ## Status
 
-🔧 In progress - ALU design and testbench are complete. Register file, and control unit under development.
+🔧 In progress - ALU and regfile design and testbench are complete. Control unit under development.
+Later stages: Write assembler and run a stored program from ROM.
 
 ## Running
 
