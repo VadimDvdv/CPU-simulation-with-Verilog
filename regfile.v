@@ -2,7 +2,7 @@
 
 module regfile (
     input        clk,
-    input        rst,         // initial reset
+    input        rst,         // initial reset, active-high
     input        write_en,
     input  [2:0] read1_addr,  // 1 mem cell to read from
     input  [2:0] read2_addr,  // 2 mem cell to read from
