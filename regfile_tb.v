@@ -39,6 +39,7 @@ module regfile_tb ();
         $display("------------------------------------------");
 
         // reset registers, hold for 2 cycles
+        str = 0;
         rst = 1;
         @(posedge clk);
         @(posedge clk);
