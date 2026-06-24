@@ -34,8 +34,27 @@
 // REGISTER FILE
 // -------------
 //  R0–R7  general purpose; no hard-wired zero register
-// =============================================================================
 
-module control_unit ();
+module control_unit (
+    input clk
+);
+    reg [5:0] program_counter = 6'b0;
+    reg [15:0] instruction_reg;
+
+    always @(posedge clk) begin
+        
+    end
+
+
+endmodule
+
+module rom (
+    input [5:0] rom_read_addr,
+    output [15:0] rom_read_data
+);
+
+    reg [15:0] memcells [0:31];
+    $readmemh("prog.hex", memcells);
+    
 
 endmodule
