@@ -83,6 +83,17 @@ module control_unit (
         .read2_data(reg_read2_data)
     );
 
+    // instantiate ROM module
+    reg [5:0] u_rom_read_addr;
+    wire [15:0] u_rom_read_data;
+
+    rom u_rom (
+        .rom_read_addr(u_rom_read_addr),
+        .rom_read_data(u_rom_read_data)
+    );
+
+
+
 endmodule
 
 module rom (
@@ -90,7 +101,11 @@ module rom (
     output [15:0] rom_read_data
 );
 
+    // IMPORTANT: Finish actual memory contents later!
+
     reg [15:0] memcells[0:31];
     $readmemh("prog.hex", memcells);
+
+    assign rom_read_data = memcells[rom_read_addr];
 
 endmodule
