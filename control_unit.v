@@ -36,25 +36,61 @@
 //  R0–R7  general purpose; no hard-wired zero register
 
 module control_unit (
-    input clk
+    input clk,
+    input initial_rst
 );
-    reg [5:0] program_counter = 6'b0;
-    reg [15:0] instruction_reg;
 
+    // setup PC and IR
+    reg [4:0] program_counter;   // 5-bit PC allows 32 words in ROM
+    reg [15:0] instruction_reg;  // 16-bit IR for 16-bit word length
+
+    // initial reset logic, resets PC and IR to 0's
     always @(posedge clk) begin
-        
+        if (initial_rst) begin
+            program_counter <= 6'b0;
+            instruction_reg <= 16'b0;
+        end
     end
 
+    // initialize ALU and regfile
+    reg [7:0] alu_a, alu_b;
+    reg [2:0] alu_opcode;
+    wire [7:0] alu_result;
+    wire [3:0] alu_flags;
+
+    alu u_alu (
+        .A     (alu_a),
+        .B     (alu_b),
+        .opcode(alu_opcode),
+        .result(alu_result),
+        .flags (alu_flags)
+    );
+
+    reg reg_rst, reg_write_en;
+    reg [2:0] reg_read1_addr, reg_read2_addr, reg_write_addr;
+    reg [7:0] reg_write_data;
+    wire [7:0] reg_read1_data, reg_read2_data;
+
+    regfile u_regfile (
+        .clk       (clk),
+        .rst       (reg_rst),
+        .write_en  (reg_write_en),
+        .read1_addr(reg_read1_addr),
+        .read2_addr(reg_read2_addr),
+        .write_addr(reg_write_addr),
+        .write_data(reg_write_data),
+        .read1_data(reg_read1_data),
+        .read2_data(reg_read2_data)
+    );
 
 endmodule
 
 module rom (
-    input [5:0] rom_read_addr,
+    input  [ 5:0] rom_read_addr,
     output [15:0] rom_read_data
 );
 
-    reg [15:0] memcells [0:31];
+    reg [15:0] memcells[0:31];
     $readmemh("prog.hex", memcells);
-    
 
 endmodule
