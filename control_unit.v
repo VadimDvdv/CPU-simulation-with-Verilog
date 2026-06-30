@@ -47,7 +47,7 @@ module control_unit (
     // initial reset logic, resets PC and IR to 0's
     always @(posedge clk) begin
         if (initial_rst) begin
-            program_counter <= 6'b0;
+            program_counter <= 5'b0;
             instruction_reg <= 16'b0;
         end
     end
@@ -66,14 +66,14 @@ module control_unit (
         .flags (alu_flags)
     );
 
-    reg reg_rst, reg_write_en;
+    reg reg_write_en;
     reg [2:0] reg_read1_addr, reg_read2_addr, reg_write_addr;
     reg [7:0] reg_write_data;
     wire [7:0] reg_read1_data, reg_read2_data;
 
     regfile u_regfile (
         .clk       (clk),
-        .rst       (reg_rst),
+        .rst       (initial_rst),
         .write_en  (reg_write_en),
         .read1_addr(reg_read1_addr),
         .read2_addr(reg_read2_addr),
