@@ -92,9 +92,9 @@ module control_unit (
         .rom_read_data(u_rom_read_data)
     );
 
-
-
+    always @(*)
 endmodule
+
 
 module rom (
     input  [ 5:0] rom_read_addr,
