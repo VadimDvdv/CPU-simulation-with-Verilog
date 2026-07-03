@@ -41,8 +41,9 @@ module control_unit (
 );
 
     // setup PC and IR
-    reg [4:0] program_counter;   // 5-bit PC allows 32 words in ROM
+    reg [5:0] program_counter;   // 5-bit PC allows 32 words in ROM
     reg [15:0] instruction_reg;  // 16-bit IR for 16-bit word length
+    wire opcode = instruction_reg[15:12];
 
     // initial reset logic, resets PC and IR to 0's
     always @(posedge clk) begin
@@ -83,21 +84,54 @@ module control_unit (
         .read2_data(reg_read2_data)
     );
 
-    // instantiate ROM module
-    reg [5:0] u_rom_read_addr;
+    // instantiate ROM module, input is hard-wired to PC
     wire [15:0] u_rom_read_data;
 
     rom u_rom (
-        .rom_read_addr(u_rom_read_addr),
+        .rom_read_addr(program_counter),
         .rom_read_data(u_rom_read_data)
     );
 
-    always @(*)
+    // Combinational logic selecting modules' inputs
+    always @(*) begin
+        case (opcode)
+            // R-type
+            4'b0: begin
+                reg_read1_addr = instruction_reg[8:6];
+                reg_read2_addr = instruction_reg[5:3];
+                alu_a = reg_read1_data;
+                alu_b = reg_read2_data;
+                alu_opcode = instruction_reg[2:0];
+            end
+        endcase
+    end 
+
+    reg [1:0] state; // state register
+
+    // Sequential Logic updating registers and FFs
+    always @ (posedge clk) begin
+        case (state)
+            // FETCH Phase
+            2'b0: instruction_reg <= u_rom_read_data;
+
+            // DECODE Phase
+            2'b01: begin
+                case (opcode)
+                    // R-type
+                    4'b0: begin
+                        
+                    end
+                endcase
+            end
+        endcase
+    end
+    
 endmodule
 
 
+
 module rom (
-    input  [ 5:0] rom_read_addr,
+    input  [5:0] rom_read_addr,
     output [15:0] rom_read_data
 );
 
