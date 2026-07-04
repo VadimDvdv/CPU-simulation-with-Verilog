@@ -1,39 +1,34 @@
 `timescale 1ns / 1ps
 
-// ISA Reference — 16-bit instruction word, 8 registers (R0–R7)
-//
+// ============================================================
+// ISA — 16-bit instruction word, 8-bit datapath, 8 registers R0–R7
+// ============================================================
 // FORMATS
-// -------
-//  R-type  [15:12] opcode=0000  [11:9] rd  [8:6] rs1  [5:3] rs2  [2:0] func
-//  I-type  [15:12] opcode       [11:9] rd  [8:6] rs1  [5:0] imm6 (signed)
-//  J-type  [15:12] opcode       [11:9] rd  [8:0] imm9 (signed)
+//   R  [15:12]=0000  [11:9]=rd  [8:6]=rs1  [5:3]=rs2  [2:0]=func
+//   I  [15:12]=op    [11:9]=rd  [8:6]=rs1  [5:0]=imm6 (signed)
+//   J  [15:12]=op    [11:9]=rd  [8:0]=imm9 (signed)
 //
-// OPCODES
-// -------
-//  4'b0000  R-type ALU  (func selects operation — see below)
-//  4'b0001  ADDI   rd = rs1 + sign_ext(imm6)
-//  4'b0010  LDI    rd = sign_ext(imm9)              (J-type encoding)
-//  4'b0011  LD     rd = MEM[rs1 + imm6]
-//  4'b0100  ST     MEM[rs1 + imm6] = rd             (rd field holds src)
-//  4'b0101  BEQ    if (rs1 == rs2) PC += imm6
-//  4'b0110  BNE    if (rs1 != rs2) PC += imm6
-//  4'b0111  BLT    if (rs1 <  rs2) PC += imm6
-//  4'b1000  JAL    rd = PC+1 ; PC += imm9
+// OPCODES                                    status
+//   0000 R-type ALU (func below)             done
+//   0001 ADDI  rd = rs1 + sext(imm6)         todo
+//   0010 LDI   rd = sext(imm9)               todo
+//   0011 LD    rd = MEM[rs1 + imm6]          todo
+//   0100 ST    MEM[rs1 + imm6] = rd          todo
+//   0101 BEQ   if rs1==rs2  PC += imm6       todo
+//   0110 BNE   if rs1!=rs2  PC += imm6       todo
+//   0111 BLT   if rs1< rs2  PC += imm6       todo
+//   1000 JAL   rd = PC+1;   PC += imm9       todo
 //
-// R-TYPE FUNC FIELD [2:0]
-// -----------------------
-//  3'b000  ADD    rd = rs1 + rs2
-//  3'b001  SUB    rd = rs1 - rs2
-//  3'b010  AND    rd = rs1 & rs2
-//  3'b011  OR     rd = rs1 | rs2
-//  3'b100  XOR    rd = rs1 ^ rs2
-//  3'b101  SHL    rd = rs1 << rs2
-//  3'b110  SHR    rd = rs1 >> rs2
-//  3'b111  NOT    rd = ~rs1       (rs2 ignored)
+// R-TYPE FUNC [2:0]  (fed straight to ALU opcode)
+//   000 ADD  rs1+rs2     100 XOR  rs1^rs2
+//   001 SUB  rs1-rs2     101 NOT  ~rs1        (rs2 ignored)
+//   010 AND  rs1&rs2     110 SHL  rs1<<1      (rs2 ignored)
+//   011 OR   rs1|rs2     111 SHR  rs1>>1      (rs2 ignored)
 //
-// REGISTER FILE
-// -------------
-//  R0–R7  general purpose; no hard-wired zero register
+// MICROARCH: multi-cycle, 3 states / R-type instruction
+//   FETCH -> REG-READ (latch A,B) -> EXEC+WB (ALU, write rd, PC++)
+// Harvard: instruction ROM addressed by PC; data memory separate (todo).
+// ============================================================
 
 module control_unit (
     input clk,
@@ -155,7 +150,10 @@ module rom (
     // IMPORTANT: Finish actual memory contents later!
 
     reg [15:0] memcells[0:31];
-    $readmemh("prog.hex", memcells);
+    initial begin
+        $readmemh("prog.hex", memcells);
+    end
+    
 
     assign rom_read_data = memcells[rom_read_addr];
 
