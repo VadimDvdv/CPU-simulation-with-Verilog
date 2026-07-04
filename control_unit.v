@@ -43,15 +43,8 @@ module control_unit (
     // setup PC and IR
     reg [5:0] program_counter;   // 5-bit PC allows 32 words in ROM
     reg [15:0] instruction_reg;  // 16-bit IR for 16-bit word length
-    wire opcode = instruction_reg[15:12];
-
-    // initial reset logic, resets PC and IR to 0's
-    always @(posedge clk) begin
-        if (initial_rst) begin
-            program_counter <= 5'b0;
-            instruction_reg <= 16'b0;
-        end
-    end
+    wire [3:0] opcode = instruction_reg[15:12];
+    reg [1:0] state; // state register
 
     // initialize ALU and regfile
     reg [7:0] alu_a, alu_b;
@@ -95,35 +88,59 @@ module control_unit (
     // Combinational logic selecting modules' inputs
     always @(*) begin
         case (opcode)
+            // ADD DEFAULTS
             // R-type
             4'b0: begin
                 reg_read1_addr = instruction_reg[8:6];
                 reg_read2_addr = instruction_reg[5:3];
-                alu_a = reg_read1_data;
-                alu_b = reg_read2_data;
                 alu_opcode = instruction_reg[2:0];
+                if (state == 2'b10) reg_write_en = 1;
+                else reg_write_en = 0;
+                reg_write_addr = instruction_reg[11:9];
+                reg_write_data = alu_result;
             end
         endcase
-    end 
-
-    reg [1:0] state; // state register
+    end
 
     // Sequential Logic updating registers and FFs
     always @ (posedge clk) begin
-        case (state)
-            // FETCH Phase
-            2'b0: instruction_reg <= u_rom_read_data;
 
-            // DECODE Phase
-            2'b01: begin
-                case (opcode)
-                    // R-type
-                    4'b0: begin
-                        
-                    end
-                endcase
-            end
-        endcase
+        if (initial_rst) begin
+            instruction_reg <= 0;
+            program_counter <= 0;
+            state <= 0;
+        end
+        else begin
+            case (state)
+                // FETCH Phase
+                2'b0: begin 
+                    instruction_reg <= u_rom_read_data;
+                    state <= 2'b01; // go to decode phase
+                end
+
+                // DECODE Phase (reading registers, )
+                2'b01: begin
+                    case (opcode)
+                        // R-type
+                        4'b0: begin
+                            alu_a <= reg_read1_data;
+                            alu_b <= reg_read2_data;
+                            state <= 2'b10;
+                        end
+                    endcase
+                end
+
+                // EXECUTE_WB Phase
+                2'b10: begin
+                    case (opcode)
+                        4'b0: begin
+                            state <= 2'b0;
+                            program_counter <= program_counter + 1;
+                        end
+                    endcase
+                end
+            endcase
+        end
     end
     
 endmodule
