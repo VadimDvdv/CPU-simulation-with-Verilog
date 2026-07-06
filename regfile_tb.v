@@ -49,7 +49,7 @@ module regfile_tb ();
 
         // write in reg 0 and 2
         @(negedge clk);
-        write_en = 1;
+        write_en   = 1;
         write_addr = 3'd0;
         write_data = 8'b01010101;
         read1_addr = 3'b0;
@@ -70,7 +70,7 @@ module regfile_tb ();
         $display("");
         $display("Read Test: read from reg 0 and 1");
         @(negedge clk);
-        write_en = 0;
+        write_en   = 0;
         read1_addr = 3'b0;
         read2_addr = 3'b001;
         @(posedge clk);
