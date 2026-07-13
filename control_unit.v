@@ -10,7 +10,7 @@
 //
 // OPCODES                                    status
 //   0000 R-type ALU (func below)             done
-//   0001 ADDI  rd = rs1 + sext(imm6)         todo
+//   0001 ADDI  rd = rs1 + sext(imm6)         done, tb in progress
 //   0010 LDI   rd = sext(imm9)               todo
 //   0011 LD    rd = MEM[rs1 + imm6]          todo
 //   0100 ST    MEM[rs1 + imm6] = rd          todo

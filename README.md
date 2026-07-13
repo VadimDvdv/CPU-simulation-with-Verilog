@@ -13,24 +13,25 @@ A multi-cycle design built from four core modules:
 
 ### Control-unit FSM
 
-Each R-type instruction executes in three cycles:
+Each instruction executes in three cycles:
 
 `FETCH` (latch IR) → `REG-READ` (latch operands A, B) → `EXEC+WB` (ALU computes, result written to `rd`, `PC++`)
 
-Written in two-process style: one clocked block latches the state register and datapath registers; one combinational block decodes control signals. `ALUOut` and ALU input muxes are intentionally deferred - they come in with branches, when a single ALU must serve both a comparison and a target computation.
+Written in two-process style: one clocked block latches the state register and datapath registers; one combinational block decodes control signals. R-type latches two register operands into A/B; ADDI latches rs1 into A and a sign-extended `imm6` into B, then shares the same execute/writeback path. `ALUOut` and ALU input muxes are intentionally deferred - they come in with branches, when a single ALU must serve both a comparison and a target computation.
 
 ## ISA
 
-16-bit instruction word, three formats (R / I / J), 9 opcodes. The full encoding lives at the top of `control_unit.v`. R-type is implemented; immediate, load/store, branch, and jump instructions are next.
+16-bit instruction word, three formats (R / I / J), 9 opcodes. The full encoding lives at the top of `control_unit.v`. **R-type and ADDI are implemented and simulating**; `LDI`, `LD`/`ST`, branches, and `JAL` are next. (Immediate widths for `LDI`/`JAL` still need reconciling against the 8-bit datapath.)
 
 ## Status
 
 - [x] ALU + testbench
 - [x] Register file + testbench
 - [x] Control unit - R-type datapath (multi-cycle FSM)
-- [ ] R-type simulation & waveform verification *(in progress)*
-- [ ] Combinational-block defaults (needed once opcode ≠ R-type is possible)
-- [ ] Remaining instructions: ADDI, LDI, LD, ST, BEQ, BNE, BLT, JAL
+- [x] R-type simulation & waveform verification - all 8 registers PASS in self-checking testbench
+- [x] ADDI - immediate add with sign-extended `imm6`
+- [ ] Combinational-block defaults + safe default state transition (an unhandled/unknown opcode currently wedges the FSM in REG-READ)
+- [ ] Remaining instructions: LDI, LD, ST, BEQ, BNE, BLT, JAL
 - [ ] Data memory for LD/ST; `ALUOut` register + ALU input muxes for branches
 - [ ] Assembler; run a stored program from ROM
 - [ ] Synthesize and run on the Xilinx Spartan-3E Starter Kit
@@ -49,6 +50,8 @@ iverilog -o alu_test alu.v alu_tb.v && vvp alu_test && gtkwave alu_test.vcd
 # Register file
 iverilog -o rf_test regfile.v regfile_tb.v && vvp rf_test
 
-# Full CPU (once the testbench is written)
-iverilog -o cpu_test control_unit.v alu.v regfile.v cpu_tb.v && vvp cpu_test
+# Full CPU (R-type + ADDI test program in prog.hex)
+iverilog -o r_type_test control_unit.v alu.v regfile.v r_type_tb.v
+vvp r_type_test
+gtkwave cpu_test.vcd
 ```
