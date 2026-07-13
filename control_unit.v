@@ -94,6 +94,14 @@ module control_unit (
                 reg_write_addr = instruction_reg[11:9];
                 reg_write_data = alu_result;
             end
+            4'b0001: begin
+                reg_read1_addr = instruction_reg[8:6];
+                alu_opcode = 3'b0;
+                if (state == 2'b10) reg_write_en = 1;
+                else reg_write_en = 0;
+                reg_write_addr = instruction_reg[11:9];
+                reg_write_data = alu_result;
+            end
         endcase
     end
 
@@ -122,13 +130,18 @@ module control_unit (
                             alu_b <= reg_read2_data;
                             state <= 2'b10;
                         end
+                        4'b0001: begin
+                            alu_a <= reg_read1_data;
+                            alu_b <= {{2{instruction_reg[5]}}, {instruction_reg[5:0]}};  // imm6 padded to 8 bit
+                            state <= 2'b10;
+                        end
                     endcase
                 end
 
                 // EXECUTE_WB Phase
                 2'b10: begin
                     case (opcode)
-                        4'b0: begin
+                        4'b0, 4'b0001: begin
                             state <= 2'b0;
                             program_counter <= program_counter + 1;
                         end
